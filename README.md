@@ -59,5 +59,27 @@ The script will then print the extracted word coordinates, the "Final Marked Cel
 ## Dependencies
 
 -   `pdfplumber`: For robust PDF parsing and extraction.
+-   `re` (built-in): Used for regular expression operations within text analysis.
 
--   `re` (built-in): Used for regular expression operations within text analysis. 
+## Problem Solving Approach
+
+Our approach to solving the complex problem of accurate data extraction from digital invoices involved an iterative process focused on identifying and addressing specific challenges presented by PDF structures:
+
+1.  **Initial PDFPlumber Extraction**: We started by leveraging `pdfplumber` to get raw table data and individual word coordinates. This provided a foundational understanding of how data is physically laid out.
+
+2.  **Identifying "Loopholes" in Table Structures**: We observed that `pdfplumber`'s default table extraction often presented "loopholes" or inaccuracies, especially with:
+    -   **Multi-line content within a single logical cell**: Text spanning multiple lines within what should be a single table cell.
+    -   **Merged cells or complex layouts**: Where `pdfplumber` might split a logical cell into multiple physical cells, or vice-versa, resulting in `None` values or misaligned data.
+    -   **Inconsistent Row Ordering**: The order of extracted rows did not always match the visual or logical order.
+
+3.  **Introducing `#$` Marking for Problematic Cells**: To explicitly flag and address multi-content cells, we introduced a `#$` marking mechanism. This allowed us to identify cells that required special re-processing.
+
+4.  **Refining Table Structuring Logic (`create_structured_table`)**:
+    -   **Dynamic Column Boundary Detection**: We developed robust logic to accurately determine column boundaries based on header cell positions.
+    -   **Word-to-Column Mapping**: Instead of relying solely on `pdfplumber`'s cell boundaries for problematic areas, we shifted to mapping individual words directly to the determined columns based on their `x` (horizontal) coordinates and overlap with column boundaries. This is crucial for handling fragmented or misaligned text.
+    -   **Vertical Row Separation (`separate_rows_by_vertical_gap`)**: We implemented a mechanism to dynamically group words into logical rows based on significant vertical gaps between them. This inherently resolves multi-line content within a logical cell.
+    -   **Combined Processing of Marked and Unmarked Rows**: The `create_structured_table` function was enhanced to process both `#$` marked rows (applying the detailed word-level restructuring) and unmarked rows (aligning their original content to columns).
+
+5.  **Ensuring Consistent Vertical Order**: A key challenge was maintaining the correct vertical order of rows in the final structured table, especially when combining restructured sub-rows and direct transfers. We standardized the calculation of each structured row's vertical position (`y_pos`) by consistently using the minimum `y0` coordinate of the words comprising that row. This `y_pos` then serves as a reliable key for sorting all rows, ensuring the output matches the visual order of the invoice.
+
+6.  **Iterative Refinement and Testing**: The approach involved continuous testing with various invoice layouts (e.g., `123.pdf`, `abc.pdf`, `789.pdf`). Each test revealed new edge cases or inconsistencies, leading to further refinements in the logic, particularly in the heuristics for word grouping and column assignment. This iterative cycle of identifying issues and implementing targeted solutions has led to the current robust extraction capabilities. 
