@@ -38,7 +38,7 @@ The main logic for PDF processing and structuring is located in `app.py`.
 
     ```python
     if __name__ == "__main__":
-        pdf_file_2 = "789.pdf" # Change this to your PDF filename
+        pdf_file_2 = "invoice.pdf" # Change this to your PDF filename
         coordinates_2 = extract_pdf_coordinates(pdf_file_2)
         print_formatted_output(coordinates_2, pdf_file_2)
     ```
@@ -59,4 +59,5 @@ The script will then print the extracted word coordinates, the "Final Marked Cel
 ## Dependencies
 
 -   `pdfplumber`: For robust PDF parsing and extraction.
+
 -   `re` (built-in): Used for regular expression operations within text analysis. 
