@@ -512,7 +512,7 @@ def print_formatted_output(coordinates_data, pdf_filename):
                 print(row)
 
 if __name__ == "__main__":
-    pdf_file_2 = "789.pdf"
+    pdf_file_2 = "invoice.pdf"
 
     coordinates_2 = extract_pdf_coordinates(pdf_file_2)
     print_formatted_output(coordinates_2, pdf_file_2)
