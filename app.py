@@ -276,7 +276,7 @@ def print_formatted_output(coordinates_data, pdf_filename):
                 print("__table end__")
                 
 if __name__ == "__main__":
-    pdf_file_2 = "123.pdf"
+    pdf_file_2 = "invoice.pdf"
     coordinates_2 = extract_pdf_coordinates(pdf_file_2)
     
     if coordinates_2:
